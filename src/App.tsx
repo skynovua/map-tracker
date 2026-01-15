@@ -1,35 +1,37 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect } from 'react';
+import { observer } from 'mobx-react-lite';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import { authStore } from './stores/AuthStore';
+import { mapStore } from './stores/MapStore';
+import { LoginPage } from './pages/LoginPage';
+import { MapPage } from './pages/MapPage';
 
-function App() {
-  const [count, setCount] = useState(0)
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#2196F3',
+    },
+    secondary: {
+      main: '#1976D2',
+    },
+  },
+});
+
+const App = observer(() => {
+  useEffect(() => {
+    // Check if user is already authenticated
+    if (authStore.isAuthenticated && authStore.apiKey) {
+      mapStore.connect(authStore.apiKey);
+    }
+  }, []);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      {authStore.isAuthenticated ? <MapPage /> : <LoginPage />}
+    </ThemeProvider>
+  );
+});
 
-export default App
+export default App;
