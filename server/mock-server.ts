@@ -144,18 +144,19 @@ function updateObjects() {
   });
 }
 
-// Broadcast active objects to all clients
+// Broadcast all objects to all clients
 function broadcastObjects() {
-  const activeObjects = Array.from(objects.values()).filter((obj) => obj.active);
+  const allObjects = Array.from(objects.values());
   const message = JSON.stringify({
     type: 'update',
     timestamp: Date.now(),
-    objects: activeObjects.map((obj) => ({
+    objects: allObjects.map((obj) => ({
       id: obj.id,
       lat: obj.lat,
       lon: obj.lon,
       heading: obj.heading,
       speed: obj.speed,
+      active: obj.active,
     })),
   });
 
@@ -174,17 +175,18 @@ wss.on('connection', (ws: WebSocket) => {
   clients.add(ws);
 
   // Send initial data
-  const activeObjects = Array.from(objects.values()).filter((obj) => obj.active);
+  const allObjects = Array.from(objects.values());
   ws.send(
     JSON.stringify({
       type: 'init',
       timestamp: Date.now(),
-      objects: activeObjects.map((obj) => ({
+      objects: allObjects.map((obj) => ({
         id: obj.id,
         lat: obj.lat,
         lon: obj.lon,
         heading: obj.heading,
         speed: obj.speed,
+        active: obj.active,
       })),
     }),
   );

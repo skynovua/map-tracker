@@ -1,5 +1,6 @@
 import { Box, Typography } from '@mui/material';
 import { divIcon } from 'leaflet';
+import { useMemo } from 'react';
 import { Marker, Popup } from 'react-leaflet';
 
 import type { TrackedObject } from '../types';
@@ -9,8 +10,8 @@ interface ObjectMarkerProps {
 }
 
 export const ObjectMarker = ({ object }: ObjectMarkerProps) => {
-  // Create SVG icon for object marker
-  const getMarkerIcon = () => {
+  // Memoize icon to prevent recreation on every render
+  const markerIcon = useMemo(() => {
     const color = object.status === 'active' ? '#2196F3' : '#FF9800';
     const iconSize = 40;
     const heading = object.heading;
@@ -34,11 +35,11 @@ export const ObjectMarker = ({ object }: ObjectMarkerProps) => {
       className: 'custom-marker',
       iconAnchor: [iconSize / 2, iconSize / 2],
     });
-  };
+  }, [object.heading, object.status]);
 
   return (
-    <Marker position={[object.lat, object.lon]} icon={getMarkerIcon()}>
-      <Popup>
+    <Marker position={[object.lat, object.lon]} icon={markerIcon}>
+      <Popup autoPan={false} closeButton={true} autoClose={false} closeOnClick={false}>
         <Box sx={{ p: 1 }}>
           <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
             {object.id}

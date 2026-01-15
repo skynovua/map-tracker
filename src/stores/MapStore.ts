@@ -104,7 +104,7 @@ export class MapStore {
     newObjects.forEach((obj) => {
       this.objects.set(obj.id, {
         ...obj,
-        status: 'active',
+        status: obj.active ? 'active' : 'lost',
         lastSeen: now,
       });
     });

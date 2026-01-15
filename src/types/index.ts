@@ -4,6 +4,7 @@ export interface TrackedObject {
   lon: number;
   heading: number; // 0-360 degrees
   speed: number; // km/h
+  active: boolean;
 }
 
 export interface WSMessage {

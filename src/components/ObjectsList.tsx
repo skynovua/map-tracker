@@ -19,7 +19,12 @@ import { mapStore } from '../stores/MapStore';
 type FilterType = 'all' | 'active' | 'lost';
 type MapObject = ReturnType<typeof mapStore.getAllObjects>[number];
 
-export const ObjectsList = observer(() => {
+interface ObjectsListProps {
+  onObjectClick: (objectId: string) => void;
+  selectedObjectId: string | null;
+}
+
+export const ObjectsList = observer(({ onObjectClick, selectedObjectId }: ObjectsListProps) => {
   const [filter, setFilter] = useState<FilterType>('all');
   const [search, setSearch] = useState('');
 
@@ -101,6 +106,8 @@ export const ObjectsList = observer(() => {
           objects.map((obj) => (
             <ListItem key={obj.id} disablePadding>
               <ListItemButton
+                selected={obj.id === selectedObjectId}
+                onClick={() => onObjectClick(obj.id)}
                 sx={{
                   py: 1,
                   borderLeft: 4,

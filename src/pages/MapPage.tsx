@@ -13,24 +13,114 @@ import {
   Typography,
 } from '@mui/material';
 import { observer } from 'mobx-react-lite';
-import { lazy, Suspense } from 'react';
-import { MapContainer, TileLayer } from 'react-leaflet';
+import { lazy, Suspense, useEffect, useState } from 'react';
+import { MapContainer, TileLayer, useMap } from 'react-leaflet';
+
+import { useStores } from '@/hooks/useStores';
 
 import { ObjectMarker } from '../components/ObjectMarker';
 import { ObjectsList } from '../components/ObjectsList';
-import { authStore } from '../stores/AuthStore';
-import { mapStore } from '../stores/MapStore';
 
 const MarkerClusterGroup = lazy(() => import('react-leaflet-cluster'));
 
 const CENTER_LAT = 50.4501;
 const CENTER_LON = 30.5234;
 
+interface MapControllerProps {
+  center: [number, number] | null;
+  followingObject: { lat: number; lon: number } | null;
+  isFollowing: boolean;
+  onStopFollowing: () => void;
+}
+
+const MapController = ({
+  center,
+  followingObject,
+  isFollowing,
+  onStopFollowing,
+}: MapControllerProps) => {
+  const map = useMap();
+
+  useEffect(() => {
+    if (center) {
+      map.flyTo(center, 50, { duration: 0.5 });
+    }
+  }, [center, map]);
+
+  useEffect(() => {
+    if (followingObject && isFollowing) {
+      map.panTo([followingObject.lat, followingObject.lon], {
+        animate: true,
+        duration: 0.3,
+        easeLinearity: 0.5,
+      });
+    }
+  }, [followingObject, isFollowing, map]);
+
+  // Stop following when user manually drags the map
+  useEffect(() => {
+    const handleDragStart = () => {
+      if (isFollowing) {
+        onStopFollowing();
+      }
+    };
+
+    map.on('dragstart', handleDragStart);
+    return () => {
+      map.off('dragstart', handleDragStart);
+    };
+  }, [isFollowing, map, onStopFollowing]);
+
+  return null;
+};
+
 export const MapPage = observer(() => {
+  const { authStore, mapStore } = useStores();
+  const [selectedObjectId, setSelectedObjectId] = useState<string | null>(null);
+  const [mapCenter, setMapCenter] = useState<[number, number] | null>(null);
+
   const handleLogout = () => {
     mapStore.disconnect();
     authStore.logout();
   };
+
+  const handleObjectClick = (objectId: string) => {
+    // If clicking the same object, toggle off
+    if (selectedObjectId === objectId) {
+      setSelectedObjectId(null);
+      return;
+    }
+
+    const obj = mapStore.objects.get(objectId);
+    if (obj) {
+      setMapCenter([obj.lat, obj.lon]);
+      // Clear center after initial fly to avoid double animation
+      setTimeout(() => setMapCenter(null), 500);
+    }
+    // Set selected after a small delay to ensure flyTo happens first
+    setTimeout(() => setSelectedObjectId(objectId), 50);
+  };
+
+  const handleStopFollowing = () => {
+    setSelectedObjectId(null);
+  };
+
+  // Get following object position for smooth tracking
+  const followingObject = selectedObjectId
+    ? (mapStore.objects.get(selectedObjectId) ?? null)
+    : null;
+
+  // Handle Escape key to stop following
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && selectedObjectId) {
+        handleStopFollowing();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedObjectId]);
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
@@ -40,6 +130,16 @@ export const MapPage = observer(() => {
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             Map Tracker
           </Typography>
+          {selectedObjectId && (
+            <Box sx={{ mr: 2, p: 1, bgcolor: 'rgba(255, 255, 255, 0.15)', borderRadius: 1 }}>
+              <Typography variant="body2" sx={{ color: 'white', fontWeight: 'bold' }}>
+                Following: {selectedObjectId}
+              </Typography>
+              <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                Press ESC to stop
+              </Typography>
+            </Box>
+          )}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <PersonIcon />
@@ -64,6 +164,12 @@ export const MapPage = observer(() => {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
+            <MapController
+              center={mapCenter}
+              followingObject={followingObject}
+              isFollowing={!!selectedObjectId}
+              onStopFollowing={handleStopFollowing}
+            />
             <Suspense fallback={null}>
               <MarkerClusterGroup
                 chunkedLoading
@@ -71,7 +177,7 @@ export const MapPage = observer(() => {
                 disableClusteringAtZoom={16}
                 spiderfyOnMaxZoom
               >
-                {mapStore.getActiveObjects().map((obj) => (
+                {mapStore.getAllObjects().map((obj) => (
                   <ObjectMarker key={obj.id} object={obj} />
                 ))}
               </MarkerClusterGroup>
@@ -160,7 +266,7 @@ export const MapPage = observer(() => {
           </Box>
 
           {/* Objects list */}
-          <ObjectsList />
+          <ObjectsList onObjectClick={handleObjectClick} selectedObjectId={selectedObjectId} />
         </Paper>
       </Box>
     </Box>
