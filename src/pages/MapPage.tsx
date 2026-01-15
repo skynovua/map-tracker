@@ -13,13 +13,15 @@ import {
   Typography,
 } from '@mui/material';
 import { observer } from 'mobx-react-lite';
+import { lazy, Suspense } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
-import MarkerClusterGroup from 'react-leaflet-cluster';
 
 import { ObjectMarker } from '../components/ObjectMarker';
 import { ObjectsList } from '../components/ObjectsList';
 import { authStore } from '../stores/AuthStore';
 import { mapStore } from '../stores/MapStore';
+
+const MarkerClusterGroup = lazy(() => import('react-leaflet-cluster'));
 
 const CENTER_LAT = 50.4501;
 const CENTER_LON = 30.5234;
@@ -62,16 +64,18 @@ export const MapPage = observer(() => {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
-            <MarkerClusterGroup
-              chunkedLoading
-              maxClusterRadius={60}
-              disableClusteringAtZoom={16}
-              spiderfyOnMaxZoom
-            >
-              {mapStore.getActiveObjects().map((obj) => (
-                <ObjectMarker key={obj.id} object={obj} />
-              ))}
-            </MarkerClusterGroup>
+            <Suspense fallback={null}>
+              <MarkerClusterGroup
+                chunkedLoading
+                maxClusterRadius={60}
+                disableClusteringAtZoom={16}
+                spiderfyOnMaxZoom
+              >
+                {mapStore.getActiveObjects().map((obj) => (
+                  <ObjectMarker key={obj.id} object={obj} />
+                ))}
+              </MarkerClusterGroup>
+            </Suspense>
           </MapContainer>
         </Box>
 
