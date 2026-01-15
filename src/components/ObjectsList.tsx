@@ -1,28 +1,30 @@
-import { useState } from 'react';
-import { observer } from 'mobx-react-lite';
+import SearchIcon from '@mui/icons-material/Search';
 import {
   Box,
+  InputAdornment,
   List,
   ListItem,
   ListItemButton,
   ListItemText,
-  Typography,
-  Tabs,
   Tab,
+  Tabs,
   TextField,
-  InputAdornment,
+  Typography,
 } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
+import { observer } from 'mobx-react-lite';
+import { useState } from 'react';
+
 import { mapStore } from '../stores/MapStore';
 
 type FilterType = 'all' | 'active' | 'lost';
+type MapObject = ReturnType<typeof mapStore.getAllObjects>[number];
 
 export const ObjectsList = observer(() => {
   const [filter, setFilter] = useState<FilterType>('all');
   const [search, setSearch] = useState('');
 
-  const getObjects = () => {
-    let objects: any[] = [];
+  const getObjects = (): MapObject[] => {
+    let objects: MapObject[] = [];
 
     if (filter === 'active') {
       objects = mapStore.getActiveObjects();
@@ -34,9 +36,7 @@ export const ObjectsList = observer(() => {
 
     // Filter by search
     if (search.trim()) {
-      objects = objects.filter((obj) =>
-        obj.id.toLowerCase().includes(search.toLowerCase())
-      );
+      objects = objects.filter((obj) => obj.id.toLowerCase().includes(search.toLowerCase()));
     }
 
     // Sort by ID
@@ -119,7 +119,12 @@ export const ObjectsList = observer(() => {
                       <Typography component="span" variant="caption" color="textSecondary">
                         {obj.status.toUpperCase()}
                       </Typography>
-                      <Typography component="span" variant="caption" color="textSecondary" sx={{ ml: 1 }}>
+                      <Typography
+                        component="span"
+                        variant="caption"
+                        color="textSecondary"
+                        sx={{ ml: 1 }}
+                      >
                         {obj.heading.toFixed(0)}° {obj.speed.toFixed(0)} km/h
                       </Typography>
                     </>

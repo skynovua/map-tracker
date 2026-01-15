@@ -1,7 +1,8 @@
-import { Marker, Popup } from 'react-leaflet';
-import { divIcon } from 'leaflet';
-import type { TrackedObject } from '../types';
 import { Box, Typography } from '@mui/material';
+import { divIcon } from 'leaflet';
+import { Marker, Popup } from 'react-leaflet';
+
+import type { TrackedObject } from '../types';
 
 interface ObjectMarkerProps {
   object: TrackedObject & { status: 'active' | 'lost' };
@@ -42,23 +43,18 @@ export const ObjectMarker = ({ object }: ObjectMarkerProps) => {
           <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
             {object.id}
           </Typography>
-          <Typography variant="caption">
-            Lat: {object.lat.toFixed(4)}°
-          </Typography>
+          <Typography variant="caption">Lat: {object.lat.toFixed(4)}°</Typography>
           <br />
-          <Typography variant="caption">
-            Lon: {object.lon.toFixed(4)}°
-          </Typography>
+          <Typography variant="caption">Lon: {object.lon.toFixed(4)}°</Typography>
           <br />
-          <Typography variant="caption">
-            Heading: {object.heading.toFixed(0)}°
-          </Typography>
+          <Typography variant="caption">Heading: {object.heading.toFixed(0)}°</Typography>
           <br />
-          <Typography variant="caption">
-            Speed: {object.speed.toFixed(1)} km/h
-          </Typography>
+          <Typography variant="caption">Speed: {object.speed.toFixed(1)} km/h</Typography>
           <br />
-          <Typography variant="caption" sx={{ color: object.status === 'active' ? 'success.main' : 'warning.main' }}>
+          <Typography
+            variant="caption"
+            sx={{ color: object.status === 'active' ? 'success.main' : 'warning.main' }}
+          >
             Status: {object.status.toUpperCase()}
           </Typography>
         </Box>

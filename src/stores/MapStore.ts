@@ -1,13 +1,13 @@
 import { makeAutoObservable, observable } from 'mobx';
+
 import type { TrackedObject } from '../types';
 
 const LOST_TIMEOUT = 5 * 60 * 1000; // 5 minutes
 const WS_URL = 'ws://localhost:8080';
 
 export class MapStore {
-  objects: Map<string, TrackedObject & { status: 'active' | 'lost'; lastSeen: number }> = observable(
-    new Map()
-  );
+  objects: Map<string, TrackedObject & { status: 'active' | 'lost'; lastSeen: number }> =
+    observable(new Map());
   ws: WebSocket | null = null;
   isConnected: boolean = false;
   isConnecting: boolean = false;
@@ -150,8 +150,9 @@ export class MapStore {
 
   private updateStats = () => {
     const total = this.objects.size;
-    const active = Array.from(this.objects.values()).filter((obj) => obj.status === 'active')
-      .length;
+    const active = Array.from(this.objects.values()).filter(
+      (obj) => obj.status === 'active',
+    ).length;
     const lost = total - active;
 
     this.stats.total = total;

@@ -1,12 +1,24 @@
-import { observer } from 'mobx-react-lite';
-import { Box, Paper, Typography, Stack, Card, CardContent, AppBar, Toolbar, Button } from '@mui/material';
+import 'leaflet/dist/leaflet.css';
+
 import PersonIcon from '@mui/icons-material/Person';
+import {
+  AppBar,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Paper,
+  Stack,
+  Toolbar,
+  Typography,
+} from '@mui/material';
+import { observer } from 'mobx-react-lite';
 import { MapContainer, TileLayer } from 'react-leaflet';
-import { mapStore } from '../stores/MapStore';
-import { authStore } from '../stores/AuthStore';
+
 import { ObjectMarker } from '../components/ObjectMarker';
 import { ObjectsList } from '../components/ObjectsList';
-import 'leaflet/dist/leaflet.css';
+import { authStore } from '../stores/AuthStore';
+import { mapStore } from '../stores/MapStore';
 
 const CENTER_LAT = 50.4501;
 const CENTER_LON = 30.5234;
@@ -71,7 +83,15 @@ export const MapPage = observer(() => {
             </Typography>
             <Stack spacing={1}>
               <Card variant="outlined">
-                <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 }, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <CardContent
+                  sx={{
+                    p: 1.5,
+                    '&:last-child': { pb: 1.5 },
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
                   <Typography color="textSecondary" variant="caption">
                     Active
                   </Typography>
@@ -79,7 +99,15 @@ export const MapPage = observer(() => {
                 </CardContent>
               </Card>
               <Card variant="outlined">
-                <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 }, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <CardContent
+                  sx={{
+                    p: 1.5,
+                    '&:last-child': { pb: 1.5 },
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
                   <Typography color="textSecondary" variant="caption">
                     Lost
                   </Typography>
@@ -89,7 +117,15 @@ export const MapPage = observer(() => {
                 </CardContent>
               </Card>
               <Card variant="outlined">
-                <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 }, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <CardContent
+                  sx={{
+                    p: 1.5,
+                    '&:last-child': { pb: 1.5 },
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
                   <Typography color="textSecondary" variant="caption">
                     Total
                   </Typography>

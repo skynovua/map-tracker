@@ -1,4 +1,4 @@
-import { WebSocketServer, WebSocket } from 'ws';
+import { WebSocket,WebSocketServer } from 'ws';
 
 interface TrackedObject {
   id: string;
@@ -118,7 +118,7 @@ wss.on('connection', (ws: WebSocket) => {
         heading: obj.heading,
         speed: obj.speed,
       })),
-    })
+    }),
   );
 
   ws.on('message', (message: string) => {

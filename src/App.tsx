@@ -1,7 +1,8 @@
-import { useEffect } from 'react';
-import { observer } from 'mobx-react-lite';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import { createTheme,ThemeProvider } from '@mui/material/styles';
+import { observer } from 'mobx-react-lite';
+import { useEffect } from 'react';
+
 import { useStores } from './hooks/useStores';
 import { LoginPage } from './pages/LoginPage';
 import { MapPage } from './pages/MapPage';

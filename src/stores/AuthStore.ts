@@ -1,4 +1,5 @@
 import { makeAutoObservable } from 'mobx';
+
 import { authService } from '../services/authService';
 
 export class AuthStore {
