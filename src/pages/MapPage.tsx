@@ -30,7 +30,7 @@ export const MapPage = observer(() => {
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
       {/* Header */}
       <AppBar position="static">
         <Toolbar>
@@ -49,7 +49,7 @@ export const MapPage = observer(() => {
         </Toolbar>
       </AppBar>
 
-      <Box sx={{ display: 'flex', flex: 1, gap: 2, p: 2 }}>
+      <Box sx={{ display: 'flex', flex: 1, gap: 2, p: 2, overflow: 'hidden' }}>
         {/* Map */}
         <Box sx={{ flex: 1, borderRadius: 1, overflow: 'hidden', boxShadow: 1 }}>
           <MapContainer
