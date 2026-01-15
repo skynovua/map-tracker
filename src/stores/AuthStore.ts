@@ -1,12 +1,6 @@
 import { makeAutoObservable } from 'mobx';
 import { authService } from '../services/authService';
 
-let onLoginCallback: ((apiKey: string) => void) | null = null;
-
-export const setAuthLoginCallback = (callback: (apiKey: string) => void) => {
-  onLoginCallback = callback;
-};
-
 export class AuthStore {
   isAuthenticated: boolean = false;
   apiKey: string = '';
@@ -41,11 +35,6 @@ export class AuthStore {
       this.apiKey = apiKey;
       this.isAuthenticated = true;
       this.isLoading = false;
-
-      // Trigger callback to connect to WebSocket
-      if (onLoginCallback) {
-        onLoginCallback(apiKey);
-      }
 
       return true;
     } catch (err) {

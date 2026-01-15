@@ -2,15 +2,9 @@ import { useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { authStore, setAuthLoginCallback } from './stores/AuthStore';
-import { mapStore } from './stores/MapStore';
+import { useStores } from './hooks/useStores';
 import { LoginPage } from './pages/LoginPage';
 import { MapPage } from './pages/MapPage';
-
-// Set callback for when user logs in
-setAuthLoginCallback((apiKey) => {
-  mapStore.connect(apiKey);
-});
 
 const theme = createTheme({
   palette: {
@@ -24,12 +18,14 @@ const theme = createTheme({
 });
 
 const App = observer(() => {
+  const { authStore, mapStore } = useStores();
+
   useEffect(() => {
     // Check if user is already authenticated on mount
     if (authStore.isAuthenticated && authStore.apiKey) {
       mapStore.connect(authStore.apiKey);
     }
-  }, []);
+  }, [authStore.isAuthenticated, authStore.apiKey, mapStore]);
 
   return (
     <ThemeProvider theme={theme}>
