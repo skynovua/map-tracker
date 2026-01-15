@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import { observer } from 'mobx-react-lite';
 import { MapContainer, TileLayer } from 'react-leaflet';
+import MarkerClusterGroup from 'react-leaflet-cluster';
 
 import { ObjectMarker } from '../components/ObjectMarker';
 import { ObjectsList } from '../components/ObjectsList';
@@ -61,9 +62,16 @@ export const MapPage = observer(() => {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
-            {mapStore.getActiveObjects().map((obj) => (
-              <ObjectMarker key={obj.id} object={obj} />
-            ))}
+            <MarkerClusterGroup
+              chunkedLoading
+              maxClusterRadius={60}
+              disableClusteringAtZoom={16}
+              spiderfyOnMaxZoom
+            >
+              {mapStore.getActiveObjects().map((obj) => (
+                <ObjectMarker key={obj.id} object={obj} />
+              ))}
+            </MarkerClusterGroup>
           </MapContainer>
         </Box>
 
