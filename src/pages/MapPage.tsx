@@ -20,11 +20,15 @@ import { useStores } from '@/hooks/useStores';
 
 import { ObjectMarker } from '../components/ObjectMarker';
 import { ObjectsList } from '../components/ObjectsList';
+import {
+  CLUSTER_DISABLE_AT_ZOOM,
+  CLUSTER_MAX_RADIUS,
+  MAP_CENTER,
+  MAP_DEFAULT_ZOOM,
+  MAP_FOLLOW_ZOOM,
+} from '../constants';
 
 const MarkerClusterGroup = lazy(() => import('react-leaflet-cluster'));
-
-const CENTER_LAT = 50.4501;
-const CENTER_LON = 30.5234;
 
 interface MapControllerProps {
   center: [number, number] | null;
@@ -43,7 +47,7 @@ const MapController = ({
 
   useEffect(() => {
     if (center) {
-      map.flyTo(center, 50, { duration: 0.5 });
+      map.flyTo(center, MAP_FOLLOW_ZOOM, { duration: 0.5 });
     }
   }, [center, map]);
 
@@ -156,8 +160,8 @@ export const MapPage = observer(() => {
         {/* Map */}
         <Box sx={{ flex: 1, borderRadius: 1, overflow: 'hidden', boxShadow: 1 }}>
           <MapContainer
-            center={[CENTER_LAT, CENTER_LON]}
-            zoom={12}
+            center={[MAP_CENTER.LAT, MAP_CENTER.LON]}
+            zoom={MAP_DEFAULT_ZOOM}
             style={{ width: '100%', height: '100%' }}
           >
             <TileLayer
@@ -173,8 +177,8 @@ export const MapPage = observer(() => {
             <Suspense fallback={null}>
               <MarkerClusterGroup
                 chunkedLoading
-                maxClusterRadius={60}
-                disableClusteringAtZoom={16}
+                maxClusterRadius={CLUSTER_MAX_RADIUS}
+                disableClusteringAtZoom={CLUSTER_DISABLE_AT_ZOOM}
                 spiderfyOnMaxZoom
               >
                 {mapStore.getAllObjects().map((obj) => (

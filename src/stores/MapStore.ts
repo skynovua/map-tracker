@@ -1,9 +1,7 @@
 import { makeAutoObservable, observable } from 'mobx';
 
+import { LOST_CHECK_INTERVAL, LOST_TIMEOUT, WS_URL } from '../constants';
 import type { TrackedObject } from '../types';
-
-const LOST_TIMEOUT = 5 * 60 * 1000; // 5 minutes
-const WS_URL = 'ws://localhost:8080';
 
 export class MapStore {
   objects: Map<string, TrackedObject & { status: 'active' | 'lost'; lastSeen: number }> =
@@ -115,7 +113,7 @@ export class MapStore {
   private startLostObjectsCheck = () => {
     this.lostCheckInterval = setInterval(() => {
       this.checkLostObjects();
-    }, 30000); // Check every 30 seconds
+    }, LOST_CHECK_INTERVAL);
   };
 
   private stopLostObjectsCheck = () => {
