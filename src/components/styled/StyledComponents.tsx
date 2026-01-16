@@ -24,7 +24,7 @@ export const StyledConnectionCard = styled(Card)<{ connected: boolean }>(
   }),
 );
 
-export const StyledSidebar = styled(Paper)(({ theme }) => ({
+export const StyledSidebar = styled(Paper)(() => ({
   width: 350,
   display: 'flex',
   flexDirection: 'column',
@@ -48,4 +48,15 @@ export const StyledFollowingBadge = styled(Box)(({ theme }) => ({
 export const StyledStatsContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
   borderBottom: `1px solid ${theme.palette.divider}`,
+}));
+
+export const StyledInfoPanel = styled(Paper)(({ theme }) => ({
+  position: 'absolute',
+  top: theme.spacing(2),
+  right: theme.spacing(2),
+  padding: theme.spacing(2),
+  minWidth: 250,
+  zIndex: 1000,
+  backgroundColor: 'rgba(255, 255, 255, 0.95)',
+  backdropFilter: 'blur(10px)',
 }));

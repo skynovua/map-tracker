@@ -14,14 +14,17 @@ import { ObjectsList } from '../components/ObjectsList';
 import {
   StyledConnectionCard,
   StyledFollowingBadge,
+  StyledInfoPanel,
   StyledMapContainer,
   StyledSidebar,
   StyledStatCard,
   StyledStatsContainer,
 } from '../components/styled/StyledComponents';
 import {
+  CLUSTER_COLORS,
   CLUSTER_DISABLE_AT_ZOOM,
   CLUSTER_MAX_RADIUS,
+  CLUSTER_THRESHOLDS,
   MAP_CENTER,
   MAP_DEFAULT_ZOOM,
   MAP_FOLLOW_ZOOM,
@@ -29,30 +32,33 @@ import {
 
 const MarkerClusterGroup = lazy(() => import('react-leaflet-cluster'));
 
-// Custom cluster icon with color gradient based on size
-const createClusterCustomIcon = (cluster: any) => {
-  const count = cluster.getChildCount();
-  let size = 40;
-  let colorClass = 'cluster-small';
-  let bgColor = '#2196F3';
-  const textColor = '#fff';
+interface ClusterMarker {
+  getChildCount: () => number;
+}
 
-  if (count >= 100) {
+const createClusterCustomIcon = (cluster: ClusterMarker): L.DivIcon => {
+  const count: number = cluster.getChildCount();
+  let size: number = 40;
+  let colorClass: string = 'cluster-small';
+  let bgColor: string = CLUSTER_COLORS.small;
+  const textColor: string = '#fff';
+
+  if (count >= CLUSTER_THRESHOLDS.large) {
     size = 60;
     colorClass = 'cluster-large';
-    bgColor = '#f44336';
-  } else if (count >= 50) {
+    bgColor = CLUSTER_COLORS.large;
+  } else if (count >= CLUSTER_THRESHOLDS.mediumLarge) {
     size = 55;
     colorClass = 'cluster-medium-large';
-    bgColor = '#ff5722';
-  } else if (count >= 20) {
+    bgColor = CLUSTER_COLORS.mediumLarge;
+  } else if (count >= CLUSTER_THRESHOLDS.medium) {
     size = 50;
     colorClass = 'cluster-medium';
-    bgColor = '#ff9800';
-  } else if (count >= 10) {
+    bgColor = CLUSTER_COLORS.medium;
+  } else if (count >= CLUSTER_THRESHOLDS.small) {
     size = 45;
     colorClass = 'cluster-small-medium';
-    bgColor = '#ffc107';
+    bgColor = CLUSTER_COLORS.smallMedium;
   }
 
   return L.divIcon({
@@ -241,11 +247,48 @@ export const MapPage = observer(() => {
                 }}
               >
                 {mapStore.getAllObjects().map((obj) => (
-                  <ObjectMarker key={obj.id} object={obj} />
+                  <ObjectMarker
+                    key={obj.id}
+                    object={obj}
+                    onClick={handleObjectClick}
+                    isSelected={selectedObjectId === obj.id}
+                  />
                 ))}
               </MarkerClusterGroup>
             </Suspense>
           </MapContainer>
+
+          {/* Info Panel */}
+          {selectedObjectId && followingObject && (
+            <StyledInfoPanel elevation={3}>
+              <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+                {selectedObjectId}
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                <Typography variant="body2">
+                  <strong>Lat:</strong> {followingObject.lat.toFixed(6)}°
+                </Typography>
+                <Typography variant="body2">
+                  <strong>Lon:</strong> {followingObject.lon.toFixed(6)}°
+                </Typography>
+                <Typography variant="body2">
+                  <strong>Heading:</strong> {followingObject.heading.toFixed(0)}°
+                </Typography>
+                <Typography variant="body2">
+                  <strong>Speed:</strong> {followingObject.speed.toFixed(1)} km/h
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: followingObject.status === 'active' ? 'success.main' : 'warning.main',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  <strong>Status:</strong> {followingObject.status.toUpperCase()}
+                </Typography>
+              </Box>
+            </StyledInfoPanel>
+          )}
         </StyledMapContainer>
 
         {/* Sidebar with stats and list */}
