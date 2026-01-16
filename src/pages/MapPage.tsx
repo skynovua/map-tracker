@@ -96,7 +96,10 @@ const MapController = ({
 
   useEffect(() => {
     if (center) {
-      map.flyTo(center, MAP_FOLLOW_ZOOM, { duration: 0.5 });
+      const currentZoom = map.getZoom();
+      // Only zoom in if current zoom is less than follow zoom, otherwise keep current zoom
+      const targetZoom = currentZoom < MAP_FOLLOW_ZOOM ? MAP_FOLLOW_ZOOM : currentZoom;
+      map.flyTo(center, targetZoom, { duration: 0.5 });
     }
   }, [center, map]);
 
