@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
 import { observer } from 'mobx-react-lite';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { useStores } from '@/hooks/useStores';
 
@@ -19,7 +19,6 @@ export const MapPage = observer(() => {
   };
 
   const handleObjectClick = (objectId: string) => {
-    // If clicking the same object, toggle off
     if (selectedObjectId === objectId) {
       setSelectedObjectId(null);
       return;
@@ -28,18 +27,15 @@ export const MapPage = observer(() => {
     const obj = mapStore.objects.get(objectId);
     if (obj) {
       setMapCenter([obj.lat, obj.lon]);
-      // Clear center after initial fly to avoid double animation
       setTimeout(() => setMapCenter(null), 500);
     }
-    // Set selected after a small delay to ensure flyTo happens first
     setTimeout(() => setSelectedObjectId(objectId), 50);
   };
 
-  const handleStopFollowing = () => {
+  const handleStopFollowing = useCallback(() => {
     setSelectedObjectId(null);
-  };
+  }, []);
 
-  // Handle Escape key to stop following
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && selectedObjectId) {
@@ -49,7 +45,7 @@ export const MapPage = observer(() => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedObjectId]);
+  }, [selectedObjectId, handleStopFollowing]);
 
   const objects = Array.from(mapStore.objects.values());
 

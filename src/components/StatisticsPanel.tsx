@@ -70,5 +70,3 @@ export const StatisticsPanel = observer(
     );
   },
 );
-
-StatisticsPanel.displayName = 'StatisticsPanel';

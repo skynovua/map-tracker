@@ -1,7 +1,7 @@
 import 'leaflet/dist/leaflet.css';
 
 import L from 'leaflet';
-import React, { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 
 import type { TrackedObject } from '@/types';
@@ -13,7 +13,6 @@ import {
   CLUSTER_THRESHOLDS,
   MAP_CENTER,
   MAP_DEFAULT_ZOOM,
-  MAP_FOLLOW_ZOOM,
 } from '../constants';
 import { ObjectInfoPanel } from './ObjectInfoPanel';
 import { ObjectMarker } from './ObjectMarker';
@@ -75,29 +74,15 @@ const createClusterCustomIcon = (cluster: ClusterMarker): L.DivIcon => {
 };
 
 interface MapControllerProps {
-  center: [number, number] | null;
   followingObject: TrackedObject | null;
   isFollowing: boolean;
   onStopFollowing: () => void;
 }
 
-const MapController = ({
-  center,
-  followingObject,
-  isFollowing,
-  onStopFollowing,
-}: MapControllerProps) => {
+const MapController = ({ followingObject, isFollowing, onStopFollowing }: MapControllerProps) => {
   const map = useMap();
 
-  React.useEffect(() => {
-    if (center) {
-      const currentZoom = map.getZoom();
-      const targetZoom = currentZoom < MAP_FOLLOW_ZOOM ? MAP_FOLLOW_ZOOM : currentZoom;
-      map.flyTo(center, targetZoom, { duration: 0.5 });
-    }
-  }, [center, map]);
-
-  React.useEffect(() => {
+  useEffect(() => {
     if (followingObject && isFollowing) {
       map.panTo([followingObject.lat, followingObject.lon], {
         animate: true,
@@ -107,7 +92,7 @@ const MapController = ({
     }
   }, [followingObject, isFollowing, map]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleDragStart = () => {
       if (isFollowing) {
         onStopFollowing();
@@ -134,7 +119,6 @@ interface MapViewerProps {
 export const MapViewer = ({
   objects,
   selectedObjectId,
-  mapCenter,
   onObjectClick,
   onStopFollowing,
 }: MapViewerProps) => {
@@ -154,7 +138,6 @@ export const MapViewer = ({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
         <MapController
-          center={mapCenter}
           followingObject={followingObject}
           isFollowing={!!selectedObjectId}
           onStopFollowing={onStopFollowing}
