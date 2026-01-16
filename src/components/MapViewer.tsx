@@ -4,6 +4,8 @@ import L from 'leaflet';
 import React, { lazy, Suspense } from 'react';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 
+import type { TrackedObject } from '@/types';
+
 import {
   CLUSTER_COLORS,
   CLUSTER_DISABLE_AT_ZOOM,
@@ -72,18 +74,9 @@ const createClusterCustomIcon = (cluster: ClusterMarker): L.DivIcon => {
   });
 };
 
-interface MapObject {
-  id: string;
-  lat: number;
-  lon: number;
-  heading: number;
-  speed: number;
-  status: 'active' | 'lost';
-}
-
 interface MapControllerProps {
   center: [number, number] | null;
-  followingObject: MapObject | null;
+  followingObject: TrackedObject | null;
   isFollowing: boolean;
   onStopFollowing: () => void;
 }
@@ -131,7 +124,7 @@ const MapController = ({
 };
 
 interface MapViewerProps {
-  objects: MapObject[];
+  objects: TrackedObject[];
   selectedObjectId: string | null;
   mapCenter: [number, number] | null;
   onObjectClick: (objectId: string) => void;

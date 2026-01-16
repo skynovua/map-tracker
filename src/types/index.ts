@@ -5,6 +5,7 @@ export interface TrackedObject {
   heading: number; // 0-360 degrees
   speed: number; // km/h
   active: boolean;
+  status: 'active' | 'lost';
 }
 
 export interface WSMessage {
