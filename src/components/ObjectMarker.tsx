@@ -1,7 +1,7 @@
 import L from 'leaflet';
 import { CircleMarker } from 'react-leaflet';
 
-import { MARKER_COLORS } from '@/constants';
+import { theme } from '@/theme/theme';
 
 import type { TrackedObject } from '../types';
 
@@ -17,9 +17,9 @@ export const ObjectMarker = ({ object, onClick, isSelected = false }: ObjectMark
   const markerColor =
     object.status === 'active'
       ? isSelected
-        ? MARKER_COLORS.selected
-        : MARKER_COLORS.active
-      : MARKER_COLORS.lost;
+        ? theme.palette.success.light
+        : theme.palette.primary.light
+      : theme.palette.warning.light;
 
   return (
     <CircleMarker
@@ -32,8 +32,8 @@ export const ObjectMarker = ({ object, onClick, isSelected = false }: ObjectMark
       pathOptions={{
         fillColor: markerColor,
         fillOpacity: 0.8,
-        color: MARKER_COLORS.white,
-        weight: 2,
+        color: theme.palette.common.white,
+        weight: 3,
       }}
     />
   );

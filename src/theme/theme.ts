@@ -1,32 +1,6 @@
 import { createTheme } from '@mui/material/styles';
 
 export const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#2196F3',
-      light: '#64B5F6',
-      dark: '#1976D2',
-    },
-    secondary: {
-      main: '#1976D2',
-    },
-    success: {
-      main: '#4CAF50',
-      light: '#C8E6C9',
-    },
-    warning: {
-      main: '#FF9800',
-      light: '#FFE0B2',
-    },
-    error: {
-      main: '#f44336',
-      light: '#FFCDD2',
-    },
-  },
-  spacing: 8,
-  shape: {
-    borderRadius: 4,
-  },
   components: {
     MuiCard: {
       styleOverrides: {

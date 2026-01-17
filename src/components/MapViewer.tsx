@@ -4,10 +4,10 @@ import L from 'leaflet';
 import { lazy, Suspense, useEffect } from 'react';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 
+import { theme } from '@/theme/theme';
 import type { TrackedObject } from '@/types';
 
 import {
-  CLUSTER_COLORS,
   CLUSTER_DISABLE_AT_ZOOM,
   CLUSTER_MAX_RADIUS,
   CLUSTER_THRESHOLDS,
@@ -28,25 +28,25 @@ const createClusterCustomIcon = (cluster: ClusterMarker): L.DivIcon => {
   const count: number = cluster.getChildCount();
   let size: number = 40;
   let colorClass: string = 'cluster-small';
-  let bgColor: string = CLUSTER_COLORS.small;
+  let bgColor: string = theme.palette.primary.light;
   const textColor: string = '#fff';
 
   if (count >= CLUSTER_THRESHOLDS.large) {
     size = 60;
     colorClass = 'cluster-large';
-    bgColor = CLUSTER_COLORS.large;
+    bgColor = theme.palette.error.main;
   } else if (count >= CLUSTER_THRESHOLDS.mediumLarge) {
     size = 55;
     colorClass = 'cluster-medium-large';
-    bgColor = CLUSTER_COLORS.mediumLarge;
+    bgColor = theme.palette.warning.dark;
   } else if (count >= CLUSTER_THRESHOLDS.medium) {
     size = 50;
     colorClass = 'cluster-medium';
-    bgColor = CLUSTER_COLORS.medium;
+    bgColor = theme.palette.warning.main;
   } else if (count >= CLUSTER_THRESHOLDS.small) {
     size = 45;
     colorClass = 'cluster-small-medium';
-    bgColor = CLUSTER_COLORS.smallMedium;
+    bgColor = theme.palette.warning.light;
   }
 
   return L.divIcon({
