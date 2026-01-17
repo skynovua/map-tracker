@@ -1,16 +1,21 @@
 import { makeAutoObservable } from 'mobx';
 
 import { authService } from '../services/authService';
+import type { RootStore } from './RootStore';
 
 export class AuthStore {
+  rootStore: RootStore;
   isAuthenticated: boolean = false;
   apiKey: string = '';
   isLoading: boolean = false;
   error: string | null = null;
 
-  constructor() {
-    makeAutoObservable(this);
+  constructor(rootStore: RootStore) {
+    this.rootStore = rootStore;
     this.checkAuth();
+    makeAutoObservable(this, {
+      rootStore: false,
+    });
   }
 
   checkAuth = () => {
@@ -52,5 +57,3 @@ export class AuthStore {
     this.error = null;
   };
 }
-
-export const authStore = new AuthStore();

@@ -2,14 +2,15 @@ import { Box } from '@mui/material';
 import { observer } from 'mobx-react-lite';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { useStores } from '@/hooks/useStores';
+import { MapHeader } from '@/components/MapHeader';
+import { useAuthStore, useMapStore } from '@/hooks/useStores';
 
-import { MapHeader } from '../components/MapHeader';
 import { MapViewer } from '../components/MapViewer';
 import { StatisticsPanel } from '../components/StatisticsPanel';
 
 export const MapPage = observer(() => {
-  const { authStore, mapStore } = useStores();
+  const mapStore = useMapStore();
+  const authStore = useAuthStore();
   const [selectedObjectId, setSelectedObjectId] = useState<string | null>(null);
   const [mapCenter, setMapCenter] = useState<[number, number] | null>(null);
   const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);

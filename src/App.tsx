@@ -5,17 +5,17 @@ import { ThemeProvider } from '@mui/material/styles';
 import { observer } from 'mobx-react-lite';
 import { lazy, Suspense, useEffect } from 'react';
 
-import { useStores } from './hooks/useStores';
+import { useAuthStore, useMapStore } from './hooks/useStores';
 import { theme } from './theme/theme';
 
 const MapPage = lazy(() => import('./pages/MapPage').then((m) => ({ default: m.MapPage })));
 const LoginPage = lazy(() => import('./pages/LoginPage').then((m) => ({ default: m.LoginPage })));
 
 const App = observer(() => {
-  const { authStore, mapStore } = useStores();
+  const mapStore = useMapStore();
+  const authStore = useAuthStore();
 
   useEffect(() => {
-    // Check if user is already authenticated on mount
     if (authStore.isAuthenticated && authStore.apiKey) {
       mapStore.connect(authStore.apiKey);
     }

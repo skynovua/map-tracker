@@ -1,7 +1,7 @@
 import { CardContent, Stack, Typography } from '@mui/material';
 import { observer } from 'mobx-react-lite';
 
-import { useStores } from '@/hooks/useStores';
+import { useMapStore } from '@/hooks/useStores';
 
 import { ObjectsList } from './ObjectsList';
 import {
@@ -18,7 +18,7 @@ interface StatisticsPanelProps {
 
 export const StatisticsPanel = observer(
   ({ selectedObjectId, onObjectClick }: StatisticsPanelProps) => {
-    const { mapStore } = useStores();
+    const mapStore = useMapStore();
 
     return (
       <StyledSidebar>

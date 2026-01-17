@@ -1,6 +1,7 @@
 // Marker colors
 export const MARKER_COLORS = {
   active: '#2196F3',
+  selected: '#4CAF50',
   lost: '#FF9800',
   white: '#ffffff',
 } as const;

@@ -1,12 +1,15 @@
 import { makeAutoObservable, observable } from 'mobx';
 
 import { LOST_CHECK_INTERVAL, LOST_TIMEOUT, WS_URL } from '../constants';
+import { WsClient } from '../services/wsClient';
 import type { TrackedObject } from '../types';
+import type { RootStore } from './RootStore';
 
 export class MapStore {
+  rootStore: RootStore;
   objects: Map<string, TrackedObject & { status: 'active' | 'lost'; lastSeen: number }> =
     observable(new Map());
-  ws: WebSocket | null = null;
+  wsClient: WsClient | null = null;
   isConnected: boolean = false;
   isConnecting: boolean = false;
   error: string | null = null;
@@ -19,25 +22,22 @@ export class MapStore {
   lostCheckInterval: ReturnType<typeof setInterval> | null = null;
   private apiKey: string = '';
 
-  constructor() {
+  constructor(rootStore: RootStore) {
+    this.rootStore = rootStore;
     makeAutoObservable(this, {
       objects: observable,
-      ws: false,
+      wsClient: false,
       lostCheckInterval: false,
+      rootStore: false,
     });
   }
 
   connect = (apiKey: string) => {
     if (this.isConnecting || this.isConnected) return;
 
-    // Close existing connection before opening new one
-    if (this.ws) {
-      this.ws.onopen = null;
-      this.ws.onmessage = null;
-      this.ws.onerror = null;
-      this.ws.onclose = null;
-      this.ws.close();
-      this.ws = null;
+    if (this.wsClient) {
+      this.wsClient.close();
+      this.wsClient = null;
     }
 
     this.apiKey = apiKey;
@@ -45,50 +45,45 @@ export class MapStore {
     this.error = null;
 
     try {
-      this.ws = new WebSocket(WS_URL);
+      this.wsClient = new WsClient(WS_URL);
 
-      this.ws.onopen = () => {
-        this.isConnected = true;
-        this.isConnecting = false;
-        console.log('WebSocket connected');
+      this.wsClient.connect({
+        onOpen: () => {
+          this.isConnected = true;
+          this.isConnecting = false;
 
-        // Send auth message
-        if (this.ws) {
-          this.ws.send(JSON.stringify({ type: 'auth', apiKey: this.apiKey }));
-        }
+          // Send auth message
+          this.wsClient?.send({ type: 'auth', apiKey: this.apiKey });
 
-        // Start checking for lost objects
-        this.startLostObjectsCheck();
-      };
+          this.startLostObjectsCheck();
+        },
+        onMessage: (data) => {
+          try {
+            const parsed = JSON.parse(data);
 
-      this.ws.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-
-          if (data.type === 'init' || data.type === 'update') {
-            this.updateObjects(data.objects || []);
-          } else if (data.type === 'auth') {
-            if (!data.success) {
-              this.error = data.error || 'Authentication failed';
-              this.disconnect();
+            if (parsed.type === 'init' || parsed.type === 'update') {
+              this.updateObjects(parsed.objects || []);
+            } else if (parsed.type === 'auth') {
+              if (!parsed.success) {
+                this.error = parsed.error || 'Authentication failed';
+                this.disconnect();
+              }
             }
+          } catch (err) {
+            console.error('Error parsing WebSocket message:', err);
           }
-        } catch (err) {
-          console.error('Error parsing WebSocket message:', err);
-        }
-      };
-
-      this.ws.onerror = () => {
-        this.error = 'WebSocket connection error';
-        this.isConnected = false;
-        this.isConnecting = false;
-      };
-
-      this.ws.onclose = () => {
-        this.isConnected = false;
-        this.isConnecting = false;
-        this.stopLostObjectsCheck();
-      };
+        },
+        onError: () => {
+          this.error = 'WebSocket connection error';
+          this.isConnected = false;
+          this.isConnecting = false;
+        },
+        onClose: () => {
+          this.isConnected = false;
+          this.isConnecting = false;
+          this.stopLostObjectsCheck();
+        },
+      });
     } catch (err) {
       this.error = err instanceof Error ? err.message : 'Connection failed';
       this.isConnecting = false;
@@ -96,14 +91,9 @@ export class MapStore {
   };
 
   disconnect = () => {
-    if (this.ws) {
-      // Remove all event listeners before closing
-      this.ws.onopen = null;
-      this.ws.onmessage = null;
-      this.ws.onerror = null;
-      this.ws.onclose = null;
-      this.ws.close();
-      this.ws = null;
+    if (this.wsClient) {
+      this.wsClient.close();
+      this.wsClient = null;
     }
     this.isConnected = false;
     this.stopLostObjectsCheck();
@@ -185,5 +175,3 @@ export class MapStore {
     return Array.from(this.objects.values());
   };
 }
-
-export const mapStore = new MapStore();

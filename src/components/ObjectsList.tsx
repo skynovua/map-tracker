@@ -14,10 +14,11 @@ import {
 import { observer } from 'mobx-react-lite';
 import { useState } from 'react';
 
-import { mapStore } from '../stores/MapStore';
+import { useMapStore } from '@/hooks/useStores';
+import type { rootStore } from '@/stores/RootStore';
 
 type FilterType = 'all' | 'active' | 'lost';
-type MapObject = ReturnType<typeof mapStore.getAllObjects>[number];
+type MapObject = ReturnType<typeof rootStore.mapStore.getAllObjects>[number];
 
 interface ObjectsListProps {
   onObjectClick: (objectId: string) => void;
@@ -25,6 +26,8 @@ interface ObjectsListProps {
 }
 
 export const ObjectsList = observer(({ onObjectClick, selectedObjectId }: ObjectsListProps) => {
+  const mapStore = useMapStore();
+
   const [filter, setFilter] = useState<FilterType>('all');
   const [search, setSearch] = useState('');
 
