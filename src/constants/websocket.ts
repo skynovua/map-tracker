@@ -1,5 +1,8 @@
-// WebSocket configuration
-export const WS_URL = 'ws://localhost:8080';
+// WebSocket configuration (falls back to localhost for dev)
+export const WS_URL =
+  import.meta.env.VITE_WS_URL?.trim() && import.meta.env.VITE_WS_URL.trim() !== ''
+    ? import.meta.env.VITE_WS_URL.trim()
+    : 'ws://localhost:8080';
 
 // Timeouts in milliseconds
 export const LOST_TIMEOUT = 5 * 60 * 1000; // 5 minutes
