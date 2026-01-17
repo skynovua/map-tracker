@@ -12,9 +12,10 @@ import {
 import { observer } from 'mobx-react-lite';
 import { useState } from 'react';
 
-import { authStore } from '../stores/AuthStore';
+import { useAuthStore } from '@/hooks/useStores';
 
 export const LoginPage = observer(() => {
+  const authStore = useAuthStore();
   const [apiKey, setApiKey] = useState('');
 
   const handleLogin = async (e: React.FormEvent) => {
