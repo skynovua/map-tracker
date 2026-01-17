@@ -30,6 +30,16 @@ export class MapStore {
   connect = (apiKey: string) => {
     if (this.isConnecting || this.isConnected) return;
 
+    // Close existing connection before opening new one
+    if (this.ws) {
+      this.ws.onopen = null;
+      this.ws.onmessage = null;
+      this.ws.onerror = null;
+      this.ws.onclose = null;
+      this.ws.close();
+      this.ws = null;
+    }
+
     this.apiKey = apiKey;
     this.isConnecting = true;
     this.error = null;
@@ -87,6 +97,11 @@ export class MapStore {
 
   disconnect = () => {
     if (this.ws) {
+      // Remove all event listeners before closing
+      this.ws.onopen = null;
+      this.ws.onmessage = null;
+      this.ws.onerror = null;
+      this.ws.onclose = null;
       this.ws.close();
       this.ws = null;
     }

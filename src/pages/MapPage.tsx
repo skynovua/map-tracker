@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
 import { observer } from 'mobx-react-lite';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useStores } from '@/hooks/useStores';
 
@@ -12,6 +12,14 @@ export const MapPage = observer(() => {
   const { authStore, mapStore } = useStores();
   const [selectedObjectId, setSelectedObjectId] = useState<string | null>(null);
   const [mapCenter, setMapCenter] = useState<[number, number] | null>(null);
+  const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  useEffect(() => {
+    const timeouts = timeoutsRef.current;
+    return () => {
+      timeouts.forEach((timeout) => clearTimeout(timeout));
+    };
+  }, []);
 
   const handleLogout = () => {
     mapStore.disconnect();
@@ -27,9 +35,11 @@ export const MapPage = observer(() => {
     const obj = mapStore.objects.get(objectId);
     if (obj) {
       setMapCenter([obj.lat, obj.lon]);
-      setTimeout(() => setMapCenter(null), 500);
+      const timeout1 = setTimeout(() => setMapCenter(null), 500);
+      timeoutsRef.current.push(timeout1);
     }
-    setTimeout(() => setSelectedObjectId(objectId), 50);
+    const timeout2 = setTimeout(() => setSelectedObjectId(objectId), 50);
+    timeoutsRef.current.push(timeout2);
   };
 
   const handleStopFollowing = useCallback(() => {
