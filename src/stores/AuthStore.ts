@@ -29,14 +29,12 @@ export class AuthStore {
     this.error = null;
 
     try {
-      // Validate that API key is not empty
       if (!apiKey || apiKey.trim().length === 0) {
         this.error = 'API key cannot be empty';
         this.isLoading = false;
         return false;
       }
 
-      // Store the API key
       authService.saveToken(apiKey);
       this.apiKey = apiKey;
       this.isAuthenticated = true;

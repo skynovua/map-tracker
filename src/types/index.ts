@@ -2,8 +2,8 @@ export interface TrackedObject {
   id: string;
   lat: number;
   lon: number;
-  heading: number; // 0-360 degrees
-  speed: number; // km/h
+  heading: number;
+  speed: number;
   active: boolean;
   status: 'active' | 'lost';
 }

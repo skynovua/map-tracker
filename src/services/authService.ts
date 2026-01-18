@@ -1,4 +1,3 @@
-// Auth service for handling API key authentication
 const AUTH_TOKEN_KEY = 'map_tracker_token';
 
 export const authService = {

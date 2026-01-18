@@ -1,73 +1,74 @@
-# React + TypeScript + Vite
+# Map Tracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Веб-додаток для відстеження об'єктів у реальному часі на карті через WebSocket.
 
-Currently, two official plugins are available:
+## Технології
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React** + **TypeScript** + **Vite**
+- **MobX** для керування станом
+- **Leaflet** + **React-Leaflet** для відображення карти
+- **Material-UI** для інтерфейсу
+- **WebSocket** для реального часу
 
-## React Compiler
+## Швидкий старт
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+# Встановіть залежності
+bun install
 
-## Expanding the ESLint configuration
+# Запустіть dev сервер
+bun dev
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+# Запустіть mock WebSocket сервер (окремий термінал)
+bun server
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+# Або запустіть обидва одночасно
+bun dev:all
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Відкрийте [http://localhost:5173](http://localhost:5173) у браузері.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x';
-import reactDom from 'eslint-plugin-react-dom';
+## Змінні оточення
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+Створіть файл `.env.local`:
+
+```env
+# WebSocket URL (за замовчуванням ws://localhost:8080)
+VITE_WS_URL=ws://localhost:8080
+```
+
+## Структура проєкту
+
+```
+src/
+├── components/      # React компоненти
+├── stores/         # MobX stores
+├── services/       # WebSocket клієнт
+├── pages/          # Сторінки
+├── constants/      # Конфігурація
+└── types/          # TypeScript типи
+```
+
+## Команди
+
+```bash
+bun run dev          # Запуск dev сервера
+bun run build        # Збірка для продакшену
+bun run lint         # Перевірка коду
+bun run preview      # Попередній перегляд збірки
+bun run server       # Запуск mock WebSocket сервера
+bun run format       # Форматування коду
+```
+
+## WebSocket API
+
+Сервер очікує такі повідомлення:
+
+```json
+// Авторизація
+{ "type": "auth", "apiKey": "your-api-key" }
+
+// Відповіді сервера
+{ "type": "init", "objects": [...] }
+{ "type": "update", "objects": [...] }
 ```

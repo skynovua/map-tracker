@@ -52,7 +52,6 @@ export class MapStore {
           this.isConnected = true;
           this.isConnecting = false;
 
-          // Send auth message
           this.wsClient?.send({ type: 'auth', apiKey: this.apiKey });
 
           this.startLostObjectsCheck();
@@ -136,10 +135,8 @@ export class MapStore {
       const timeSinceSeen = now - obj.lastSeen;
 
       if (timeSinceSeen > LOST_TIMEOUT) {
-        // Remove objects older than 5 minutes
         toDelete.push(id);
       } else if (timeSinceSeen > LOST_TIMEOUT / 2) {
-        // Mark as lost after 2.5 minutes
         obj.status = 'lost';
       }
     });

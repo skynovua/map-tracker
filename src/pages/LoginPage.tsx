@@ -75,7 +75,7 @@ export const LoginPage = observer(() => {
               </Button>
 
               <Typography variant="caption" display="block" align="center" sx={{ mt: 2 }}>
-                Use any non-empty key for testing
+                Use any non-empty API key for this demo.
               </Typography>
             </form>
           </CardContent>
